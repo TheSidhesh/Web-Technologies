@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Homework 4</title>
+   
+    <script type="text/javascript">
+	    function validFile()
+	    {
+	        var xmlfile=document.getElementById("sampleform").elements["check"].value;
+	        if(!xmlfile)
+	            alert("Enter a file name");
+	        else
+	            getContents()
+	    }
+
+	    function getContents()
+	    {
+	    	var url=document.getElementById("sampleform").elements["check"].value;
+    		try
+            {
+                if(window.XMLHttpRequest)
+                	xmlhttp=new XMLHttpRequest(); 
+                else
+                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                xmlhttp.open("GET",url,false);
+                xmlhttp.send();
+                var xmlfile=xmlhttp.responseXML;
+                if(xmlhttp.status == 404)
+                    alert("File not found");
+                else if(xmlfile.documentElement.nodeName=="parsererror")
+                    alert("Error in XML file");
+                else
+                {
+    				var rowdata=xmlfile.getElementsByTagName("Row");
+                   
+                    if(rowdata.length==0)
+                        alert("XML file Empty");
+
+                    else
+                    {
+                    	html_text=window.open("", "hw4", "scrollbars=1,height=990,width=990");
+                        html_text.document.write("<table width='980' border='2'><tr>");
+                        var headers=xmlfile.getElementsByTagName("Data");
+                        
+                        for(var i=0; i<headers.length; i++)
+                        {
+                        	if(headers.item(i).firstChild!=null)
+                                html_text.document.write("<th>"+headers[i].childNodes[0].nodeValue+"</th>");
+                            else
+                                html_text.document.write("<th></th>");
+                            
+                        }
+                            
+                        html_text.document.write("</tr>");
+                        var callsign=xmlfile.getElementsByTagName("CallSign");
+                        var freq=xmlfile.getElementsByTagName("Frequency");
+                        var loc=xmlfile.getElementsByTagName("Location");
+                        var format=xmlfile.getElementsByTagName("Format");
+                        var hp=xmlfile.getElementsByTagName("HomePage");
+                        var logo=xmlfile.getElementsByTagName("Logo");
+                        for(var i=0; i<rowdata.length; i++)
+                        {
+                            if(!callsign[i].childNodes[0])
+                                html_text.document.write("<tr><td>N.A.</td>"); 
+                            else
+                                html_text.document.write("<tr><td>"+callsign[i].childNodes[0].nodeValue+"</td>");
+                                
+                            
+                            if(!freq[i].childNodes[0])
+                                html_text.document.write("<td>N.A.</td>");
+                            else
+                                html_text.document.write("<td>"+freq[i].childNodes[0].nodeValue+"</td>");
+                                
+                            
+                            if(loc[i].children.length>0)
+                            {
+                                
+                                html_text.document.write("<td><ul>");
+                                for(var j=0; j<loc[i].children.length; j++)
+                                {
+                                    if(loc[i].children[j].innerHTML!="")
+                                        html_text.document.write("<li>"+loc[i].children[j].innerHTML+"</li>");
+                                    else
+                                        html_text.document.write("<li>N.A.</li>");
+                                }
+                                html_text.document.write("</ul></td>");
+                            }
+                            else
+                                html_text.document.write("<td>N.A.</td>");
+                            
+                            
+                            if(!format[i].childNodes[0])
+                                html_text.document.write("<td width='80px'>N.A.</td>");
+                            else
+                                html_text.document.write("<td width='80px'>"+format[i].childNodes[0].nodeValue+"</td>");
+                                
+                            
+                            if(!hp[i].childNodes[0])
+                               html_text.document.write("<td width='100px'>N.A.</td>");
+                            else
+                                html_text.document.write("<td width='100px'><a href="+hp[i].childNodes[0].nodeValue+" target ='_blank' >"+hp[i].childNodes[0].nodeValue+"</a></td>");
+                                
+                            
+                            if(!logo[i].childNodes[0])
+                                html_text.document.write("<td>N.A.</td></tr>");
+                            else
+                                html_text.document.write("<td><img  width='280px' height='130px' src="+logo[i].childNodes[0].nodeValue+"></td></tr>");
+                                
+                        }
+                        html_text.document.write("</table>");
+                        html_text.document.close();
+                    }
+                }
+            }
+            catch(err)
+            {
+                alert("File not found");
+                return;
+            }
+	    }
+   	</script>
+    
+</head>
+
+<body>
+  <p style="text-align: center">Enter URL for Company List XML  File</p>
+    <form style="text-align: center" id="sampleform" onsubmit="validFile()">
+      <input type="text" name="check" id="filename">
+        <br><br>
+      <input type="submit" value="Submit Query" name="submitfile">
+    </form>
+<noscript>
+</body>
+</html>
